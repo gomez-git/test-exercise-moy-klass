@@ -1,0 +1,16 @@
+[
+  {
+    "id": 3,
+    "date": "2019-09-03",
+    "title": "Orange Color",
+    "status": 1,
+    "visitCount": null,
+    "students": null,
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  }
+]

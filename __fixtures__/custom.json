@@ -1,0 +1,21 @@
+[
+  {
+    "id": 9,
+    "title": "Yellow Color",
+    "status": 1,
+    "visitCount": null,
+    "date": "2019-06-20",
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey"
+      }
+    ],
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  }
+]
