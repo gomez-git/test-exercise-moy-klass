@@ -1,0 +1,124 @@
+[
+  {
+    "id": 2,
+    "title": "Red Color",
+    "status": 0,
+    "visitCount": 2,
+    "date": "2019-09-02",
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey"
+      },
+      {
+        "id": 3,
+        "name": "Maxim"
+      }
+    ],
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Sveta"
+      },
+      {
+        "id": 4,
+        "name": "Masha"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Purple Color",
+    "status": 0,
+    "visitCount": null,
+    "date": "2019-05-10",
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey"
+      },
+      {
+        "id": 4,
+        "name": "Slava"
+      }
+    ],
+    "teachers": null
+  },
+  {
+    "id": 7,
+    "title": "White Color",
+    "status": 0,
+    "visitCount": 2,
+    "date": "2019-06-17",
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan"
+      },
+      {
+        "id": 2,
+        "name": "Sergey"
+      }
+    ],
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Sveta"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Brown Color",
+    "status": 0,
+    "visitCount": 1,
+    "date": "2019-06-24",
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan"
+      },
+      {
+        "id": 3,
+        "name": "Maxim"
+      }
+    ],
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  },
+  {
+    "id": 1,
+    "title": "Green Color",
+    "status": 1,
+    "visitCount": 2,
+    "date": "2019-09-01",
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan"
+      },
+      {
+        "id": 2,
+        "name": "Sergey"
+      },
+      {
+        "id": 3,
+        "name": "Maxim"
+      }
+    ],
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Sveta"
+      },
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  }
+]

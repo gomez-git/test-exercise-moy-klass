@@ -1,0 +1,35 @@
+{
+  "name": "@gomez-git/test-task-moy-klass",
+  "version": "0.0.1",
+  "description": "Solution of test task from Moy Klass",
+  "main": "./bin/app.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gomez-git/test-task-moy-klass.git"
+  },
+  "author": "Konstantin Kuzin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gomez-git/test-task-moy-klass/issues"
+  },
+  "homepage": "https://github.com/gomez-git/test-task-moy-klass#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "knex": "^2.1.0",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.16.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.4.6",
+    "jest": "^28.1.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
+  }
+}

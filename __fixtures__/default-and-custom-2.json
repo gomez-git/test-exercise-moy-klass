@@ -1,0 +1,20 @@
+[
+  {
+    "id": 5,
+    "date": "2019-05-10",
+    "title": "Purple Color",
+    "status": 0,
+    "visitCount": null,
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey"
+      },
+      {
+        "id": 4,
+        "name": "Slava"
+      }
+    ],
+    "teachers": null
+  }
+]
