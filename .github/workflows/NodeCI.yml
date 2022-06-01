@@ -1,0 +1,42 @@
+name: Node CI
+
+on: 
+  push:
+    branches: 'main'
+    paths: '**.js'
+  pull_request:
+    branches: 'main'
+
+env:
+  CI: true
+  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: snyk/actions/setup@master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: sudo systemctl start postgresql.service
+      - run: sudo -u postgres psql --command="CREATE USER gomez_git PASSWORD 'nothing'"
+      - run: sudo -u postgres createdb --owner=gomez_git test
+      - run: sudo -u postgres psql test < test.sql
+      - run: sudo -u postgres psql test --command="GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO gomez_git"
+      - run: sudo -u postgres psql test --command="GRANT SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO gomez_git"
+      - run: make install
+      - run: make lint
+      - uses: paambaati/codeclimate-action@v3.0.0
+        with:
+          coverageCommand: make test-coverage u=gomez_git p=nothing
+          debug: true
+      - run: snyk test
