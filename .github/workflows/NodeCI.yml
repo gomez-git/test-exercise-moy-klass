@@ -30,8 +30,8 @@ jobs:
       - run: |
           sudo systemctl start postgresql.service
           sudo -u postgres psql --command="CREATE USER gomez_git PASSWORD 'nothing'"
-          sudo -u postgres createdb test
-          sudo -u postgres psql test < test.sql
+          sudo -u postgres createdb test_database_moy_klass
+          sudo -u postgres psql test_database_moy_klass < test.sql
       - run: make install
       - run: make lint
       - uses: paambaati/codeclimate-action@v3.0.0
