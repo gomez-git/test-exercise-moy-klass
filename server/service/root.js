@@ -1,8 +1,9 @@
+import { isMatch } from 'date-fns';
 import rootDAO from '../dao/root.js';
 
-const validateParameters = (obj) => {
-  const validateScheme = {
-    date: (value) => /^\d{4}(-\d{2}){2}(,\d{4}(-\d{2}){2})?$/.test(value),
+const validateParameters = (parameters) => {
+  const validationScheme = {
+    date: (value) => value.split(',').every((d) => isMatch(d, 'yyyy-MM-dd')),
     status: (value) => /^[01]$/.test(value),
     teacherIds: (value) => /^(null|\d+(,\d+)*)$/.test(value),
     studentsCount: (value) => /^(null|\d+(,\d+)?)$/.test(value),
@@ -10,19 +11,13 @@ const validateParameters = (obj) => {
     lessonsPerPage: (value) => /^\d+$/.test(value),
   };
 
-  return Object.keys(obj)
-    .filter((parameter) => !validateScheme[parameter](obj[parameter]));
+  return Object.entries(parameters)
+    .filter(([parameter, value]) => !validationScheme[parameter](value));
 };
 
 export default (filterParameters) => {
   const {
-    date,
-    status,
-    teacherIds,
-    studentsCount,
-    page = 1,
-    lessonsPerPage = 5,
-    ...rest
+    date, status, teacherIds, studentsCount, page = 1, lessonsPerPage = 5, ...rest
   } = filterParameters;
 
   const restParameters = Object.keys(rest);
@@ -32,7 +27,10 @@ export default (filterParameters) => {
 
   const parametersWithInvalidValue = validateParameters(filterParameters);
   if (parametersWithInvalidValue.length > 0) {
-    throw new Error(`Invalid parameter(s) value: ${parametersWithInvalidValue.join(', ')}.`);
+    const string = parametersWithInvalidValue
+      .map(([parameter, value]) => `${parameter}=${JSON.stringify(value)}`)
+      .join(', ');
+    throw new Error(`Invalid parameter(s) value: ${string}.`);
   }
 
   return rootDAO(date, status, teacherIds, studentsCount, page, lessonsPerPage);
