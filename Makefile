@@ -5,16 +5,21 @@ u := $(USER)
 p := 
 h := localhost
 P := 5432
-d := test
+db := test_database_moy_klass
 
 start:
-	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(d) npm run dev -s
+	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(db) npm run dev -s
 
-test:
-	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(d) npm test -s
+restart-test-db:
+	-dropdb $(db)
+	createdb $(db)
+	psql $(db) < test.sql
+
+test: restart-test-db
+	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(db) npm test -s
 
 test-coverage:
-	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(d) npm test -s -- --coverage
+	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(db) npm test -s -- --coverage
 
 lint:
 	npx eslint .

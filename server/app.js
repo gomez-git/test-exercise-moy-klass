@@ -1,8 +1,9 @@
-import Express from 'express';
+import express from 'express';
 import router from './routes/index.js';
 
-const app = new Express();
+const app = express();
 
-app.use(router);
+app.use(express.json());
+app.use('/', router);
 
 export default app;

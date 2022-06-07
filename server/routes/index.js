@@ -1,7 +1,10 @@
-import Express from 'express';
-import rootController from '../controllers/root.js';
+import Router from 'express';
+import rootRouter from './root.js';
+import lessonsRouter from './lessons.js';
 
-const router = Express.Router();
-router.get('/', rootController);
+const router = new Router();
+
+router.use('/', rootRouter);
+router.use('/lessons', lessonsRouter);
 
 export default router;

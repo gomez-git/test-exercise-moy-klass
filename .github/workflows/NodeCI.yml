@@ -27,12 +27,11 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: sudo systemctl start postgresql.service
-      - run: sudo -u postgres psql --command="CREATE USER gomez_git PASSWORD 'nothing'"
-      - run: sudo -u postgres createdb --owner=gomez_git test
-      - run: sudo -u postgres psql test < test.sql
-      - run: sudo -u postgres psql test --command="GRANT SELECT ON ALL TABLES IN SCHEMA PUBLIC TO gomez_git"
-      - run: sudo -u postgres psql test --command="GRANT SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO gomez_git"
+      - run: |
+          sudo systemctl start postgresql.service
+          sudo -u postgres psql --command="CREATE USER gomez_git PASSWORD 'nothing'"
+          sudo -u postgres createdb test_database_moy_klass
+          sudo -u postgres psql test_database_moy_klass < test.sql
       - run: make install
       - run: make lint
       - uses: paambaati/codeclimate-action@v3.0.0
