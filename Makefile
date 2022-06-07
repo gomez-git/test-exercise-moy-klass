@@ -18,7 +18,7 @@ restart-test-db:
 test: restart-test-db
 	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(db) npm test -s
 
-test-coverage: restart-test-db
+test-coverage:
 	PG_CONNECTION_STRING=postgres://$(u):$(p)@$(h):$(P)/$(db) npm test -s -- --coverage
 
 lint:
