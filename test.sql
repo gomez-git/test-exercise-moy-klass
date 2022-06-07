@@ -328,6 +328,12 @@ ALTER TABLE ONLY lesson_teachers
 ALTER TABLE ONLY lesson_teachers
     ADD CONSTRAINT lesson_teachers_teacher_id_fkey FOREIGN KEY (teacher_id) REFERENCES teachers(id);
 
+--
+-- Name: public; Type: ACL; Schema: -; Owner: -
+--
+
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA PUBLIC TO gomez_git;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA PUBLIC TO gomez_git;
 
 --
 -- PostgreSQL database dump complete
