@@ -1,6 +1,6 @@
 {
   "name": "@gomez-git/test-task-moy-klass",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Solution of test task from Moy Klass",
   "main": "./bin/app.js",
   "type": "module",
