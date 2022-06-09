@@ -73,6 +73,11 @@ const buildLessonTeachers = (lessonIds, teacherIds) => lessonIds
 
 export default async (teacherIds, title, days, firstDate, lessonsCount, lastDate) => {
   const dates = getDates(days, firstDate, { lessonsCount, lastDate });
+
+  if (dates.length === 0) {
+    return [];
+  }
+
   const lessons = buildLessons(title, dates);
   const trx = await knex.transaction();
   const lessonIds = await trx('lessons')
