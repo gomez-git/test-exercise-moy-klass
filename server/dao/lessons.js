@@ -54,6 +54,7 @@ const getDates = (days, firstDate, { lessonsCount, lastDate }) => {
     .filter((day) => day >= firstDayOfWeek && day < (firstDayOfWeek + maxLessonsDuration))
     .map((day) => new Date(firstYear, firstMonth, firstDateOfMonth - firstDayOfWeek + day))
     .map((date) => date.toLocaleDateString('en-CA', { timeZone: 'Europe/Moscow' }))
+    .filter((date) => date >= firstDate)
     .slice(0, limitedLessonCounts);
 
   return lastDate && lessonsCount === undefined
