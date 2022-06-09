@@ -6,7 +6,9 @@ const validateParameters = (parameters) => {
     date: (value) => value.split(',').every((d) => isMatch(d, 'yyyy-MM-dd')),
     status: (value) => /^[01]$/.test(value),
     teacherIds: (value) => /^(null|\d+(,\d+)*)$/.test(value),
-    studentsCount: (value) => /^(null|\d+(,\d+)?)$/.test(value),
+    studentsCount: (value) => (
+      /^(null|\d+(,\d+)?)$/.test(value) && !(value.split(',')[1] && value.split(',')[0] > value.split(',')[1])
+    ),
     page: (value) => /^\d+$/.test(value),
     lessonsPerPage: (value) => /^\d+$/.test(value),
   };

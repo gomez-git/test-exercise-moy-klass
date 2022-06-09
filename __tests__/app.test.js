@@ -1,11 +1,10 @@
-import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs/promises';
 import request from 'supertest';
 import app from '../server/app.js';
 import knex from '../server/db/db.js';
 
-const __filename = fileURLToPath(import.meta.url);
+const __filename = new URL(import.meta.url).pathname;
 const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filepath) => fs.readFile(filepath, 'utf-8');
@@ -16,8 +15,8 @@ describe('GET /', () => {
   const queries = {
     default: {},
     'default and custom 1': {
-      date: '2019-09-03',
-      studentsCount: 'null',
+      studentsCount: '0,2',
+      lessonsPerPage: 10,
     },
     'default and custom 2': {
       teacherIds: 'null',
@@ -54,13 +53,13 @@ describe('GET negative cases', () => {
   const queryParams = {
     date: ['01.02.2020', '2020-02-01,2020-02-30', ''],
     teacherIds: ['one', '[1,2,3,4]', ''],
-    studentsCount: ['four', '1,2,3', ''],
+    studentsCount: ['four', '3,2', '1,2,3'],
     status: ['false', '2', ''],
     page: ['first', 'last', ''],
     lessonsPerPage: ['five', 'null', ''],
   };
 
-  test.each([1, 2, 3])('case %s with invalid parameters', async (i) => {
+  test.each([1, 2, 3])('case %s', async (i) => {
     const parameters = Object.entries(queryParams);
     const address = parameters
       .reduce((acc, [parameter, value]) => `${acc}${parameter}=${value[i - 1]}&`, '/?')
@@ -84,6 +83,16 @@ describe('GET negative cases', () => {
 });
 
 describe('POST /lessons', () => {
+  beforeAll(() => {
+    const teachers = [
+      { id: 5, name: 'Svetlana' },
+      { id: 6, name: 'Valeria' },
+    ];
+
+    return knex('teachers')
+      .insert(teachers);
+  });
+
   const postParameters = {
     'lessonsCount with lastDate': {
       teacherIds: [1, 2],
@@ -92,6 +101,20 @@ describe('POST /lessons', () => {
       firstDate: '2020-01-01',
       lessonsCount: 10,
       lastDate: '2020-02-29',
+    },
+    'zero lessons': {
+      teacherIds: [6],
+      title: 'Navy Color',
+      days: [2, 3],
+      firstDate: '2022-03-31',
+      lastDate: '2022-04-04',
+    },
+    'eight lessons': {
+      teacherIds: [5],
+      title: 'Blue Ocean',
+      days: [0, 1, 2, 3, 4, 5, 6],
+      firstDate: '2022-04-05',
+      lastDate: '2022-04-12',
     },
     'limit 1 year': {
       teacherIds: [3],
@@ -111,8 +134,10 @@ describe('POST /lessons', () => {
 
   const expectedIds = {
     'lessonsCount with lastDate': [...Array(10)].map((_, i) => i + 11),
-    'limit 1 year': [...Array(52)].map((_, i) => i + 21),
-    'limit 300 lessons': [...Array(300)].map((_, i) => i + 73),
+    'zero lessons': [],
+    'eight lessons': [...Array(8)].map((_, i) => i + 21),
+    'limit 1 year': [...Array(52)].map((_, i) => i + 29),
+    'limit 300 lessons': [...Array(300)].map((_, i) => i + 81),
   };
 
   test.each(
@@ -156,7 +181,7 @@ describe('POST /lessons', () => {
 
   test.each(
     Object.keys(postParameters),
-  )('GET ids from lessons %s', async (name) => {
+  )('GET ids from lesson_teachers %s', async (name) => {
     const { teacherIds } = postParameters[name];
     const actual = await knex('lesson_teachers')
       .select('lesson_id as id')

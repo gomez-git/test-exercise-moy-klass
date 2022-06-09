@@ -1,64 +1,41 @@
 import knex from '../db/db.js';
 
-const getRawWhereDateQuery = (date) => {
-  if (date === undefined) {
-    return '';
-  }
-  const [firstDate, lastDate = firstDate] = date.split(',');
-  return `WHERE date BETWEEN '${firstDate}' AND '${lastDate}' `;
-};
-
-const getRawWhereStatusQuery = (status) => (status === undefined
-  ? ''
-  : `WHERE status = ${status} `);
-
-const getRawWhereStudentsCountQuery = (studentsCount) => {
-  if (studentsCount === undefined) {
-    return '';
-  }
-  const [min, max = min] = studentsCount.split(',');
-  return studentsCount === 'null'
-    ? 'WHERE ARRAY_LENGTH(students, 1) ISNULL '
-    : `WHERE ARRAY_LENGTH(students, 1) BETWEEN ${min} AND ${max} `;
-};
-
-const getRawWhereTeachersQuery = (teacherIds) => {
-  if (teacherIds === undefined) {
-    return '';
-  }
-  return teacherIds === 'null'
-    ? 'WHERE teachers ISNULL '
-    : 'WHERE teachers NOTNULL ';
-};
-
-const getLessonVisitCountStudentsTable = () => knex('lesson_students')
-  .select('lesson_id', knex.raw('count(visit)::integer as visit_count'))
-  .where('visit', '=', 'true')
-  .groupBy('lesson_id');
-
-const getLessonArrStudentsTable = () => knex('lesson_students')
+const getMainTable = () => knex('lessons')
   .select(
-    'lesson_id',
-    knex.raw('array_agg(student_id) as students'),
-  )
-  .groupBy('lesson_id')
-  .as('lesson_arr_students');
+    'id',
+    knex.raw('date::VARCHAR(10)'),
+    'title',
+    'status',
+    knex.raw('COALESCE(visit_count, 0) AS "visitCount"'),
+    knex.raw('COALESCE(arr_students, ARRAY[]::JSON[]) AS students'),
+    knex.raw('COALESCE(arr_teachers, ARRAY[]::JSON[]) AS teachers'),
+  );
 
 const getLessonFilteredTeachersTable = (table, teacherIds) => (
-  teacherIds === undefined || teacherIds === 'null'
+  teacherIds === undefined
     ? table
     : table.join(
       knex('lesson_teachers')
-        .select('lesson_id as id')
+        .select('lesson_id as l_id')
+        .distinct()
         .whereIn('teacher_id', teacherIds.split(','))
         .as('lesson_filtered_teachers'),
-      'lesson_id',
-      'lesson_filtered_teachers.id',
+      'lesson_teachers.lesson_id',
+      'lesson_filtered_teachers.l_id',
     ));
 
 const getLessonArrTeachersTable = (teacherIds) => {
   const table = knex('lesson_teachers')
-    .select('lesson_id', knex.raw('array_agg(distinct teacher_id) as teachers'));
+    .select(
+      'lesson_id',
+      knex.raw(
+        'ARRAY_AGG('
+        + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name)'
+        + 'ORDER BY id'
+        + ') AS arr_teachers',
+      ),
+    )
+    .join('teachers', 'teacher_id', 'id');
 
   const tableWithFilter = getLessonFilteredTeachersTable(table, teacherIds);
 
@@ -67,53 +44,109 @@ const getLessonArrTeachersTable = (teacherIds) => {
     .as('lesson_arr_teachers');
 };
 
-const getDataFromDB = async (rawWhereQueryAll, teacherIds, lessonsPerPage, page) => {
-  const data = await knex('lessons')
-    .with('lesson_visit_count_students', getLessonVisitCountStudentsTable())
-    .select(
-      'id',
-      knex.raw('date::varchar(10)'),
-      'title',
-      'status',
-      'visit_count AS visitCount',
-      'students',
-      'teachers',
-    )
-    .leftJoin('lesson_visit_count_students', 'id', 'lesson_visit_count_students.lesson_id')
-    .leftJoin(getLessonArrStudentsTable(), 'id', 'lesson_arr_students.lesson_id')
-    .leftJoin(getLessonArrTeachersTable(teacherIds), 'id', 'lesson_arr_teachers.lesson_id')
-    .whereRaw(rawWhereQueryAll)
-    .orderBy(['status', 'id'])
-    .limit(lessonsPerPage)
-    .offset((page - 1) * lessonsPerPage);
+const joinLessonTeachersTable = (table, teacherIds) => {
+  const joinParameters = ['id', 'lesson_arr_teachers.lesson_id'];
 
-  return data;
+  switch (teacherIds) {
+    case undefined:
+    case 'null':
+    case '0':
+      return table
+        .leftJoin(getLessonArrTeachersTable(), ...joinParameters);
+    default:
+      return table
+        .join(getLessonArrTeachersTable(teacherIds), ...joinParameters);
+  }
 };
 
-const fillStudentsAndTeachers = async (data) => {
-  const promises = data
-    .map(async ({ students, teachers, ...rest }) => ({
-      ...rest,
-      students: (students ? await knex('students').whereIn('id', students) : students),
-      teachers: (teachers ? await knex('teachers').whereIn('id', teachers) : teachers),
-    }));
+const getLessonArrStudentsTable = () => knex('lesson_students')
+  .select(
+    'lesson_id',
+    knex.raw(
+      'ARRAY_AGG('
+      + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name, \'visit\', visit)'
+      + 'ORDER BY id'
+      + ') AS arr_students',
+    ),
+  )
+  .join('students', 'student_id', 'id')
+  .groupBy('lesson_id')
+  .as('lesson_arr_students');
 
-  const filledData = await Promise.all(promises);
+const joinLessonStudentsTable = (table) => table
+  .leftJoin(
+    getLessonArrStudentsTable(),
+    'id',
+    'lesson_arr_students.lesson_id',
+  );
 
-  return filledData;
+const getLessonVisitCountStudentsTable = () => knex('lesson_students')
+  .select('lesson_id', knex.raw('COUNT(visit)::INTEGER AS visit_count'))
+  .where('visit', '=', 'true')
+  .groupBy('lesson_id')
+  .as('lesson_visit_count_students');
+
+const joinLessonStudentsTableWithVisitCount = (table) => table
+  .leftJoin(
+    getLessonVisitCountStudentsTable(),
+    'id',
+    'lesson_visit_count_students.lesson_id',
+  );
+
+const filterWhenTeachersIsNull = (table, teacherIds) => (
+  teacherIds === 'null' || teacherIds === '0'
+    ? table.whereNull('arr_teachers')
+    : table
+);
+
+const filterStudentsCount = (table, studentsCount) => {
+  switch (studentsCount) {
+    case 'null':
+      return table.whereNull('arr_students');
+    case undefined:
+      return table;
+    default: {
+      const [min, max = min] = studentsCount.split(',');
+
+      return min === '0'
+        ? table
+          .whereRaw(`ARRAY_LENGTH(arr_students, 1) BETWEEN ${min} AND ${max} OR arr_students ISNULL`)
+        : table
+          .whereRaw(`ARRAY_LENGTH(arr_students, 1) BETWEEN ${min} AND ${max}`);
+    }
+  }
 };
+
+const filterWithDate = (table, date = '') => {
+  const [firstDate, lastDate = firstDate] = date.split(',');
+
+  return date === ''
+    ? table
+    : table.whereBetween('date', [firstDate, lastDate]);
+};
+
+const filterWithStatus = (table, status) => (
+  status === undefined
+    ? table
+    : table.where('status', '=', status)
+);
 
 export default async (date, status, teacherIds, studentsCount, page, lessonsPerPage) => {
-  const rawWhereQueryDate = getRawWhereDateQuery(date);
-  const rawWhereQueryStatus = getRawWhereStatusQuery(status);
-  const rawWhereQueryStudentsCount = getRawWhereStudentsCountQuery(studentsCount);
-  const rawWhereQueryTeachers = getRawWhereTeachersQuery(teacherIds);
-  const rawWhereQueryAll = (
-    `${rawWhereQueryTeachers}${rawWhereQueryDate}${rawWhereQueryStatus}${rawWhereQueryStudentsCount}`
-  ).replace('WHERE ', '').replace(/WHERE/g, 'AND');
+  const limit = lessonsPerPage;
+  const offset = (page - 1) * lessonsPerPage;
 
-  const dataFromDB = await getDataFromDB(rawWhereQueryAll, teacherIds, lessonsPerPage, page);
-  const filledData = await fillStudentsAndTeachers(dataFromDB);
+  const mainTable = getMainTable();
+  const tableWithTeachers = joinLessonTeachersTable(mainTable, teacherIds);
+  const tableWithStudents = joinLessonStudentsTable(tableWithTeachers, studentsCount);
+  const tableWithVisitCount = joinLessonStudentsTableWithVisitCount(tableWithStudents);
+  const filteredWithStudentsCount = filterStudentsCount(tableWithVisitCount, studentsCount);
+  const filteredWithTeachers = filterWhenTeachersIsNull(filteredWithStudentsCount, teacherIds);
+  const filteredWithDate = filterWithDate(filteredWithTeachers, date);
+  const filteredWithStatus = filterWithStatus(filteredWithDate, status);
+  const limitedData = await filteredWithStatus
+    .orderBy(['status', 'id'])
+    .limit(limit)
+    .offset(offset);
 
-  return filledData;
+  return limitedData;
 };

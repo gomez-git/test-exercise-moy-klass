@@ -1,11 +1,155 @@
 [
   {
+    "id": 2,
+    "date": "2019-09-02",
+    "title": "Red Color",
+    "status": 0,
+    "visitCount": 2,
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey",
+        "visit": true
+      },
+      {
+        "id": 3,
+        "name": "Maxim",
+        "visit": true
+      }
+    ],
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Sveta"
+      },
+      {
+        "id": 4,
+        "name": "Masha"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "date": "2019-05-10",
+    "title": "Purple Color",
+    "status": 0,
+    "visitCount": 0,
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey",
+        "visit": false
+      },
+      {
+        "id": 4,
+        "name": "Slava",
+        "visit": false
+      }
+    ],
+    "teachers": []
+  },
+  {
+    "id": 7,
+    "date": "2019-06-17",
+    "title": "White Color",
+    "status": 0,
+    "visitCount": 2,
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan",
+        "visit": true
+      },
+      {
+        "id": 2,
+        "name": "Sergey",
+        "visit": true
+      }
+    ],
+    "teachers": [
+      {
+        "id": 1,
+        "name": "Sveta"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "date": "2019-06-24",
+    "title": "Brown Color",
+    "status": 0,
+    "visitCount": 1,
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan",
+        "visit": false
+      },
+      {
+        "id": 3,
+        "name": "Maxim",
+        "visit": true
+      }
+    ],
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  },
+  {
     "id": 3,
     "date": "2019-09-03",
     "title": "Orange Color",
     "status": 1,
-    "visitCount": null,
-    "students": null,
+    "visitCount": 0,
+    "students": [],
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "date": "2019-05-15",
+    "title": "Red Color",
+    "status": 1,
+    "visitCount": 0,
+    "students": [
+      {
+        "id": 1,
+        "name": "Ivan",
+        "visit": false
+      },
+      {
+        "id": 3,
+        "name": "Maxim",
+        "visit": false
+      }
+    ],
+    "teachers": [
+      {
+        "id": 3,
+        "name": "Angelina"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "date": "2019-06-20",
+    "title": "Yellow Color",
+    "status": 1,
+    "visitCount": 0,
+    "students": [
+      {
+        "id": 2,
+        "name": "Sergey",
+        "visit": false
+      }
+    ],
     "teachers": [
       {
         "id": 3,
