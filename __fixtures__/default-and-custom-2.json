@@ -4,17 +4,19 @@
     "date": "2019-05-10",
     "title": "Purple Color",
     "status": 0,
-    "visitCount": null,
+    "visitCount": 0,
     "students": [
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": false
       },
       {
         "id": 4,
-        "name": "Slava"
+        "name": "Slava",
+        "visit": false
       }
     ],
-    "teachers": null
+    "teachers": []
   }
 ]

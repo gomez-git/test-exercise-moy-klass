@@ -1,18 +1,20 @@
 [
   {
     "id": 2,
+    "date": "2019-09-02",
     "title": "Red Color",
     "status": 0,
     "visitCount": 2,
-    "date": "2019-09-02",
     "students": [
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": true
       },
       {
         "id": 3,
-        "name": "Maxim"
+        "name": "Maxim",
+        "visit": true
       }
     ],
     "teachers": [
@@ -28,36 +30,40 @@
   },
   {
     "id": 5,
+    "date": "2019-05-10",
     "title": "Purple Color",
     "status": 0,
-    "visitCount": null,
-    "date": "2019-05-10",
+    "visitCount": 0,
     "students": [
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": false
       },
       {
         "id": 4,
-        "name": "Slava"
+        "name": "Slava",
+        "visit": false
       }
     ],
-    "teachers": null
+    "teachers": []
   },
   {
     "id": 7,
+    "date": "2019-06-17",
     "title": "White Color",
     "status": 0,
     "visitCount": 2,
-    "date": "2019-06-17",
     "students": [
       {
         "id": 1,
-        "name": "Ivan"
+        "name": "Ivan",
+        "visit": true
       },
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": true
       }
     ],
     "teachers": [
@@ -69,18 +75,20 @@
   },
   {
     "id": 10,
+    "date": "2019-06-24",
     "title": "Brown Color",
     "status": 0,
     "visitCount": 1,
-    "date": "2019-06-24",
     "students": [
       {
         "id": 1,
-        "name": "Ivan"
+        "name": "Ivan",
+        "visit": false
       },
       {
         "id": 3,
-        "name": "Maxim"
+        "name": "Maxim",
+        "visit": true
       }
     ],
     "teachers": [
@@ -92,22 +100,25 @@
   },
   {
     "id": 1,
+    "date": "2019-09-01",
     "title": "Green Color",
     "status": 1,
     "visitCount": 2,
-    "date": "2019-09-01",
     "students": [
       {
         "id": 1,
-        "name": "Ivan"
+        "name": "Ivan",
+        "visit": true
       },
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": true
       },
       {
         "id": 3,
-        "name": "Maxim"
+        "name": "Maxim",
+        "visit": false
       }
     ],
     "teachers": [

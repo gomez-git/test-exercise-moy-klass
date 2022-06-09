@@ -1,14 +1,15 @@
 [
   {
     "id": 9,
+    "date": "2019-06-20",
     "title": "Yellow Color",
     "status": 1,
-    "visitCount": null,
-    "date": "2019-06-20",
+    "visitCount": 0,
     "students": [
       {
         "id": 2,
-        "name": "Sergey"
+        "name": "Sergey",
+        "visit": false
       }
     ],
     "teachers": [
