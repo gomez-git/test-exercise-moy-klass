@@ -95,12 +95,12 @@ const filterStudentsCount = (table, studentsCount) => {
       return table;
     default: {
       const [min, max = min] = studentsCount.split(',');
+      const tableWithFilter = table
+        .whereRaw(`ARRAY_LENGTH(arr_students, 1) BETWEEN ${min} AND ${max}`);
 
       return min === '0'
-        ? table
-          .whereRaw(`ARRAY_LENGTH(arr_students, 1) BETWEEN ${min} AND ${max} OR arr_students ISNULL`)
-        : table
-          .whereRaw(`ARRAY_LENGTH(arr_students, 1) BETWEEN ${min} AND ${max}`);
+        ? tableWithFilter.orWhereNull('arr_students')
+        : tableWithFilter;
     }
   }
 };
@@ -121,7 +121,7 @@ const filterWithStatus = (table, status) => (
 
 export default async (date, status, teacherIds, studentsCount, page, lessonsPerPage) => {
   const limit = lessonsPerPage;
-  const offset = (page - 1) * lessonsPerPage;
+  const offset = (page - 1) * limit;
 
   const mainTable = getMainTable();
   const tableWithTeachers = joinLessonTeachersTable(mainTable, teacherIds);
