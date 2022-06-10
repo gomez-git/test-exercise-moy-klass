@@ -6,7 +6,7 @@ const getMainTable = () => knex('lessons')
     knex.raw('date::VARCHAR(10)'),
     'title',
     'status',
-    knex.raw('COALESCE(visit_count, 0) AS "visitCount"'),
+    knex.raw('COALESCE(visit_count::INTEGER, 0) AS "visitCount"'),
     knex.raw('COALESCE(arr_students, ARRAY[]::JSON[]) AS students'),
     knex.raw('COALESCE(arr_teachers, ARRAY[]::JSON[]) AS teachers'),
   );
@@ -62,6 +62,7 @@ const joinLessonTeachersTable = (table, teacherIds) => {
 const getLessonArrStudentsTable = () => knex('lesson_students')
   .select(
     'lesson_id',
+    knex.raw('SUM(visit::INTEGER) as visit_count'),
     knex.raw(
       'ARRAY_AGG('
       + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name, \'visit\', visit)'
@@ -78,19 +79,6 @@ const joinLessonStudentsTable = (table) => table
     getLessonArrStudentsTable(),
     'id',
     'lesson_arr_students.lesson_id',
-  );
-
-const getLessonVisitCountStudentsTable = () => knex('lesson_students')
-  .select('lesson_id', knex.raw('COUNT(visit)::INTEGER AS visit_count'))
-  .where('visit', '=', 'true')
-  .groupBy('lesson_id')
-  .as('lesson_visit_count_students');
-
-const joinLessonStudentsTableWithVisitCount = (table) => table
-  .leftJoin(
-    getLessonVisitCountStudentsTable(),
-    'id',
-    'lesson_visit_count_students.lesson_id',
   );
 
 const filterWhenTeachersIsNull = (table, teacherIds) => (
@@ -138,8 +126,7 @@ export default async (date, status, teacherIds, studentsCount, page, lessonsPerP
   const mainTable = getMainTable();
   const tableWithTeachers = joinLessonTeachersTable(mainTable, teacherIds);
   const tableWithStudents = joinLessonStudentsTable(tableWithTeachers, studentsCount);
-  const tableWithVisitCount = joinLessonStudentsTableWithVisitCount(tableWithStudents);
-  const filteredWithStudentsCount = filterStudentsCount(tableWithVisitCount, studentsCount);
+  const filteredWithStudentsCount = filterStudentsCount(tableWithStudents, studentsCount);
   const filteredWithTeachers = filterWhenTeachersIsNull(filteredWithStudentsCount, teacherIds);
   const filteredWithDate = filterWithDate(filteredWithTeachers, date);
   const filteredWithStatus = filterWithStatus(filteredWithDate, status);
