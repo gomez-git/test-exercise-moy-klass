@@ -20,7 +20,7 @@ const getLessonFilteredTeachersTable = (table, teacherIds) => (
         .distinct()
         .whereIn('teacher_id', teacherIds.split(','))
         .as('lesson_filtered_teachers'),
-      'lesson_teachers.lesson_id',
+      'lesson_id',
       'lesson_filtered_teachers.l_id',
     ));
 
@@ -30,7 +30,7 @@ const getLessonArrTeachersTable = (teacherIds) => {
       'lesson_id',
       knex.raw(
         'ARRAY_AGG('
-        + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name)'
+        + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name) '
         + 'ORDER BY id'
         + ') AS arr_teachers',
       ),
@@ -65,7 +65,7 @@ const getLessonArrStudentsTable = () => knex('lesson_students')
     knex.raw('SUM(visit::INTEGER) as visit_count'),
     knex.raw(
       'ARRAY_AGG('
-      + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name, \'visit\', visit)'
+      + 'JSON_BUILD_OBJECT(\'id\', id, \'name\', name, \'visit\', visit) '
       + 'ORDER BY id'
       + ') AS arr_students',
     ),
